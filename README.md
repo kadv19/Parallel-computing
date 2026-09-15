@@ -69,6 +69,161 @@ The system is layered: **Data layer** (`array_generator` + `task_generator` + `a
 - Python 3 with pandas, numpy, scikit-learn, joblib, matplotlib
 - Internet on first build (Catch2 via FetchContent)
 
+## How to Run the Project
+
+> Beginner-friendly quick-start for a fresh clone. All commands below have been verified against the current repository (68 tests passing, zero warnings).
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/kadv19/Parallel-computing.git
+cd Parallel-computing
+```
+
+### 2. Build the Project
+
+```bash
+cmake -S . -B build
+cmake --build build -j
+```
+
+This builds the C++ executables (`build/main`, `build/benchmark`, `build/task_benchmark`) and test suite (`build/tests`) with `-Wall -Wextra -Wpedantic` zero warnings.
+
+### 3. Run All Tests
+
+```bash
+ctest --test-dir build --output-on-failure
+```
+
+Expected result:
+
+```text
+100% tests passed, 0 tests failed out of 68
+
+Total Test time (real) =   0.15 sec
+```
+
+The current project contains **68 C++ tests** (Catch2, verified via `ctest --test-dir build --output-on-failure`).
+
+### 4. Run a Small Benchmark
+
+```bash
+./build/benchmark --array-size 100000 --task-count 10 --workers 4
+```
+
+This runs the sequential baseline and all parallel scheduling strategies (FCFS, SJF, RoundRobin, Dynamic, AI) on a small workload and prints CSV to stdout. Verified help and defaults (`src/benchmark/benchmark.cpp:36`):
+
+- `--array-size N` (default 1000000), `--task-count N` (default 100), `--pattern sequential|strided|random` (default sequential), `--stride N` (default 8), `--workers N` (default 4), `--repeat-count N` (default 5), `--seed`, `--runs`, `--warmup`, `--output`.
+
+Example with explicit pattern (also verified):
+
+```bash
+./build/benchmark --array-size 100000 --task-count 10 --pattern sequential --workers 4 --repeat-count 5
+```
+
+### 5. Run the Experiment Suite
+
+```bash
+python3 experiments/run_experiments.py
+```
+
+This invokes `build/benchmark` for the configured matrix and generates/updates:
+
+```text
+experiments/results/benchmark_results.csv
+```
+
+The default matrix (`experiments/run_experiments.py:72`) evaluates combinations of:
+
+- `array_size` = 1000000
+- `task_count` = 100
+- `access pattern` = sequential / strided / random
+- `worker_count` = 1, 2, 4 (auto-capped to hardware threads)
+- `scheduling strategy` = Sequential + FCFS + SJF + RoundRobin + Dynamic + AI
+
+Default output is **54 data rows** (9 configs × 6 schedulers; 55 lines with header, verified `wc -l experiments/results/benchmark_results.csv` = 55). Use `--full` for a larger matrix.
+
+### 6. Train / Evaluate the ML Model
+
+```bash
+python3 ml/ml_pipeline.py
+```
+
+Inspected `ml/ml_pipeline.py:1` — the pipeline loads `experiments/results/task_burst_dataset.csv` (11040 rows), does a config-based 75/25 split (14 configs held out, 2560 test rows), trains Linear Regression (primary) and Decision Tree comparison, validates export, and produces:
+
+```text
+ml/model.json
+ml/model_metrics.json
+ml/model.pkl
+ml/test_predictions.csv
+```
+
+Current metrics (from `ml/model_metrics.json`): Linear Regression `MAE~0.040 RMSE~0.076 R²~0.793`, Decision Tree `R²~0.879`. Linear Regression is the deployed model for C++ inference because it is lightweight, transparent, and easy to implement directly in C++ (`src/ml/model.cpp:89`), even though Decision Tree had better prediction accuracy.
+
+### 7. Generate Visualizations
+
+```bash
+python3 analysis/visualize.py
+```
+
+Verified `analysis/visualize.py:1` uses `matplotlib` Agg backend (headless). It loads `experiments/results/benchmark_results.csv`, `ml/model_metrics.json`, and `ml/test_predictions.csv` and generates outputs under:
+
+```text
+analysis/plots/
+```
+
+including:
+
+```text
+execution_time_by_pattern.png
+scheduler_comparison.png
+speedup_vs_workers.png
+efficiency_vs_workers.png
+throughput_vs_workers.png
+ai_prediction_quality.png
+ai_vs_traditional.png
+burst_time_by_pattern.png
+```
+
+Also:
+
+```text
+analysis/results_summary.txt
+analysis/final_comparison.csv
+analysis/model_summary.txt
+```
+
+### 8. Typical Complete Workflow
+
+```bash
+git clone https://github.com/kadv19/Parallel-computing.git
+cd Parallel-computing
+
+cmake -S . -B build
+cmake --build build -j
+
+ctest --test-dir build --output-on-failure
+
+./build/benchmark --array-size 100000 --task-count 10 --workers 4
+
+python3 ml/ml_pipeline.py
+python3 experiments/run_experiments.py
+python3 analysis/visualize.py
+```
+
+Each command above is valid in the current repository. The safest order is to **build and test first**, then run a small benchmark to sanity-check, then regenerate ML model (requires existing `task_burst_dataset.csv`), then regenerate full benchmark results, then regenerate visualizations (which depend on both). Running `experiments/run_experiments.py` or `ml/ml_pipeline.py` will overwrite `benchmark_results.csv` or model artifacts, which is intentional for reproducibility — committed artifacts are the reference results.
+
+### Requirements
+
+Only dependencies actually required (inspected from `CMakeLists.txt` and Python imports):
+
+- **C++:** Compiler with C++17 support (e.g., g++ >= 9, clang++ >= 10), CMake >= 3.14, `Threads` (pthreads)
+- **C++ FetchContent:** Internet on first build for Catch2 (`https://github.com/catchorg/Catch2.git` tag `v3.7.1`)
+- **Python:** Python 3 with:
+  - `pandas`, `numpy`, `scikit-learn`, `joblib`, `matplotlib` (required by `ml/ml_pipeline.py:16` and `analysis/visualize.py:11`)
+  - No TensorFlow, PyTorch, CUDA, Streamlit, or Plotly required
+- **Verification:** `python3 -c "import pandas, sklearn, matplotlib, numpy; print('ok')"` → `ok`
+
 ## Build Instructions
 
 ```bash
