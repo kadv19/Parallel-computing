@@ -1,0 +1,24 @@
+Model: Linear Regression
+
+Features:
+- element_count
+- working_set_bytes
+- access_pattern_encoded
+- stride
+- repeat_count
+- operation_count
+- locality_score
+
+Target:
+- burst_time_ms
+
+MAE: 0.040406222722575075
+RMSE: 0.07661440216018676
+R2: 0.7932562377742023
+
+Train samples: 8480
+Test samples: 2560
+
+Comparison (decision_tree): MAE 0.027174008550478735 RMSE 0.05858399299941614 R2 0.8791158059067976
+
+Notes: Burst time prediction uses only pre-execution features; config-based holdout.

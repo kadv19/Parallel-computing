@@ -1,0 +1,66 @@
+# Build output
+build/
+*.o
+*.obj
+*.a
+*.so
+*.exe
+*.out
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+cmake_install.cmake
+Makefile
+compile_commands.json
+_deps/
+
+# Python artifacts
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Environment / secrets
+.env
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Raw images placeholder (large, not tracked) — keep .gitkeep but allow other ignores
+data/raw_images/*
+!data/raw_images/.gitkeep
+
+# Placeholders — keep .gitkeep
+!analysis/figures/.gitkeep
+!ml/models/.gitkeep
+!ml/.gitkeep
+!experiments/.gitkeep
+!scheduler_eval/.gitkeep
+!scripts/.gitkeep
+!src/image/.gitkeep
+!src/instrumentation/.gitkeep
+!src/logging/.gitkeep
+!src/processing/.gitkeep
+
+# IMPORTANT: Do NOT ignore reproducibility artifacts — ensure they are tracked
+# These negations override any broader ignore if added later
+!ml/model.json
+!ml/model_metrics.json
+!ml/model.pkl
+!ml/test_predictions.csv
+!experiments/results/benchmark_results.csv
+!experiments/results/task_burst_dataset.csv
+!analysis/plots/*.png
+!analysis/results_summary.txt
+!analysis/final_comparison.csv
+!analysis/model_summary.txt

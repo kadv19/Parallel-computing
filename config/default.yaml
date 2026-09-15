@@ -1,0 +1,24 @@
+# Default configuration for AI-Driven Cache-Aware Parallel Image Processing Scheduler
+# Phase 2 — numerical array workload (no image dataset)
+
+# Legacy Phase 1 fields (kept for compatibility)
+dataset_path: "data/sample"
+default_core_count: 4
+log_output_path: "experiments/results/run.log"
+
+# Phase 2 fields
+array_size: 1000000
+array_seed: 42
+task_count: 10
+kernel_a: 1.0001
+kernel_b: 0.5
+kernel_c: 1.00001
+repeat_count: 5
+default_access_pattern: "sequential"
+default_stride: 8
+
+# Phase 3 fields
+worker_count: 4
+
+# Phase 6 fields
+ai_model_path: "ml/model.json"

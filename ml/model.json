@@ -1,0 +1,38 @@
+{
+  "model_type": "linear_regression",
+  "features": [
+    "element_count",
+    "working_set_bytes",
+    "access_pattern_encoded",
+    "stride",
+    "repeat_count",
+    "operation_count",
+    "locality_score"
+  ],
+  "coefficients": [
+    3.947339211815132e-07,
+    3.157871562411051e-06,
+    0.046684453155222905,
+    -0.007429193126163577,
+    0.005163500485715439,
+    0.005163500485715446,
+    -0.02095493825466343
+  ],
+  "intercept": -0.04012545756232748,
+  "categorical_mapping": {
+    "sequential": 0,
+    "strided": 1,
+    "random": 2
+  },
+  "feature_order": [
+    "element_count",
+    "working_set_bytes",
+    "access_pattern_encoded",
+    "stride",
+    "repeat_count",
+    "operation_count",
+    "locality_score"
+  ],
+  "target": "burst_time_ms",
+  "notes": "Burst time prediction uses only pre-execution features; no data leakage. Config-based holdout split."
+}

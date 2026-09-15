@@ -1,0 +1,42 @@
+{
+  "model_type": "linear_regression",
+  "features": [
+    "element_count",
+    "working_set_bytes",
+    "access_pattern_encoded",
+    "stride",
+    "repeat_count",
+    "operation_count",
+    "locality_score"
+  ],
+  "target": "burst_time_ms",
+  "train_samples": 8480,
+  "test_samples": 2560,
+  "train_configs": 43,
+  "test_configs": 14,
+  "mae": 0.040406222722575075,
+  "rmse": 0.07661440216018676,
+  "r2": 0.7932562377742023,
+  "comparison_model": {
+    "model_type": "decision_tree",
+    "max_depth": 6,
+    "mae": 0.027174008550478735,
+    "rmse": 0.05858399299941614,
+    "r2": 0.8791158059067976
+  },
+  "categorical_mapping": {
+    "sequential": 0,
+    "strided": 1,
+    "random": 2
+  },
+  "coefficients": [
+    3.947339211815132e-07,
+    3.157871562411051e-06,
+    0.046684453155222905,
+    -0.007429193126163577,
+    0.005163500485715439,
+    0.005163500485715446,
+    -0.02095493825466343
+  ],
+  "intercept": -0.04012545756232748
+}
